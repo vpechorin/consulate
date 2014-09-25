@@ -1,0 +1,10 @@
+/target
+/.settings
+/.project
+/.springBeans
+/.classpath
+/*.ppr
+/build
+/bin
+/gradle.properties
+/.gradle
