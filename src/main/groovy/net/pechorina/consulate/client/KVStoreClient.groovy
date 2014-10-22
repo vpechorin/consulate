@@ -5,11 +5,9 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClientException
-
 import com.fasterxml.jackson.core.type.TypeReference
-
 import groovy.util.logging.Slf4j
-import net.pechorina.consulate.Consul;
+import net.pechorina.consulate.Consul
 import net.pechorina.consulate.data.KeyValue
 import net.pechorina.consulate.data.agent.AgentService
 import net.pechorina.consulate.data.catalog.CatalogRegistration

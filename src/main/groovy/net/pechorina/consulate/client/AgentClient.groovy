@@ -5,9 +5,8 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClientException
-
 import groovy.util.logging.Slf4j
-import net.pechorina.consulate.Consul;
+import net.pechorina.consulate.Consul
 import net.pechorina.consulate.data.agent.AgentService
 import net.pechorina.consulate.data.agent.ServiceRegistration
 
@@ -25,7 +24,7 @@ class AgentClient {
 			return true
 		}
 		catch (RestClientException ex) {
-			log.error("REST error: " + ex)
+			log.error("Registration failed ---> REST error: " + ex)
 		}
 		return false
 	}
@@ -36,7 +35,7 @@ class AgentClient {
 			return true
 		}
 		catch (RestClientException ex) {
-			log.error("REST error: " + ex)
+			log.error("Dergistration failed ---> REST error: " + ex)
 		}
 		return false
 	}

@@ -50,13 +50,6 @@ class KeyValueSpecs extends Specification {
 			l == ["test/k11": "v123", "test/k21":"v124", "test/k31":"v125"]
 	}
 	
-	def "Step5"() {
-		when:
-			def v = consul.kv.getValue("remotek1/p1", "vm1")
-		then:
-			v == "v1"
-	}
-	
 	def cleanup() {
 		consul.kv.deleteRecursive("test/")
 	}
