@@ -1,16 +1,12 @@
 package net.pechorina.consulate
-
-import java.util.List
-
-import net.pechorina.consulate.client.AgentClient;
-import net.pechorina.consulate.client.CatalogClient;
+import com.fasterxml.jackson.databind.ObjectMapper
+import net.pechorina.consulate.client.AgentClient
+import net.pechorina.consulate.client.CatalogClient
 import net.pechorina.consulate.client.KVStoreClient
-import net.pechorina.consulate.exceptions.ConsulateException;
-
+import net.pechorina.consulate.exceptions.ConsulateException
+import net.pechorina.consulate.utils.CustomResponseErrorHandler
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.web.client.RestTemplate
-
-import com.fasterxml.jackson.databind.ObjectMapper
 
 class Consul {
 	String host
@@ -28,6 +24,7 @@ class Consul {
 			
 			ObjectMapper mapper = new ObjectMapper()
 			RestTemplate restTemplate = new RestTemplate()
+			restTemplate.setErrorHandler( new CustomResponseErrorHandler() )
 			
 			Consul c = new Consul(
 				host: host, 
