@@ -18,7 +18,7 @@ apply plugin: 'maven'
 apply plugin: 'artifactory'
 
 group = 'net.pechorina.consulate'
-version = '0.1.7'
+version = '0.1.8'
 description = """Consul client using REST API"""
 
 sourceCompatibility = 1.8

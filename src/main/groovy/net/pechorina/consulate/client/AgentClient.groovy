@@ -1,14 +1,14 @@
 package net.pechorina.consulate.client
 
+import groovy.util.logging.Slf4j
+import net.pechorina.consulate.Consul
+import net.pechorina.consulate.data.agent.AgentService
+import net.pechorina.consulate.data.agent.ServiceRegistration
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClientException
-import groovy.util.logging.Slf4j
-import net.pechorina.consulate.Consul
-import net.pechorina.consulate.data.agent.AgentService
-import net.pechorina.consulate.data.agent.ServiceRegistration
 
 @Slf4j
 class AgentClient {
@@ -32,11 +32,13 @@ class AgentClient {
 	Boolean deregister(String id) {
 		try {
 			consul.restTemplate.put(url + "/service/deregister/$id", null)
+			consul.kv.put("/dataimport/$id", "DOWN")
 			return true
 		}
 		catch (RestClientException ex) {
-			log.error("Dergistration failed ---> REST error: " + ex)
+			log.error("Deregistration failed ---> REST error: " + ex)
 		}
+
 		return false
 	}
 	

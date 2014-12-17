@@ -1,18 +1,16 @@
 package net.pechorina.consulate.client
 
+import groovy.util.logging.Slf4j
+import net.pechorina.consulate.Consul
+import net.pechorina.consulate.data.catalog.CatalogRegistration
+import net.pechorina.consulate.data.catalog.CatalogService
+import net.pechorina.consulate.data.catalog.NodeAddress
+import net.pechorina.consulate.data.catalog.Service
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClientException
-import com.fasterxml.jackson.core.type.TypeReference
-import groovy.util.logging.Slf4j
-import net.pechorina.consulate.Consul
-import net.pechorina.consulate.data.agent.AgentService
-import net.pechorina.consulate.data.catalog.CatalogRegistration
-import net.pechorina.consulate.data.catalog.CatalogService
-import net.pechorina.consulate.data.catalog.NodeAddress
-import net.pechorina.consulate.data.catalog.Service
 
 /**
  * @author victor
