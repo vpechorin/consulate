@@ -1,11 +1,8 @@
 package net.pechorina.consulate
 
-import java.util.Map;
-
-import net.pechorina.consulate.data.agent.AgentService;
-import spock.lang.Ignore
-import spock.lang.Specification;
-import groovy.util.logging.Slf4j;
+import groovy.util.logging.Slf4j
+import net.pechorina.consulate.data.agent.AgentService
+import spock.lang.Specification
 
 @Slf4j
 class AgentSpecs extends Specification {

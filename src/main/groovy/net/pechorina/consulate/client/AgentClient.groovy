@@ -1,14 +1,12 @@
 package net.pechorina.consulate.client
 
+import com.fasterxml.jackson.core.type.TypeReference
 import groovy.util.logging.Slf4j
 import net.pechorina.consulate.Consul
 import net.pechorina.consulate.data.agent.AgentService
 import net.pechorina.consulate.data.agent.ServiceRegistration
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestClientException
+import net.pechorina.consulate.exceptions.RESTException
+import net.pechorina.consulate.utils.JsonMapHelper
 
 @Slf4j
 class AgentClient {
@@ -20,10 +18,10 @@ class AgentClient {
 		ServiceRegistration reg = new ServiceRegistration(name: name, id: id, port: port)
 		
 		try {
-			consul.restTemplate.put(url + "/service/register", reg)
+			consul.httpClient.put(url + "/service/register", JsonMapHelper.toJson(consul, reg));
 			return true
 		}
-		catch (RestClientException ex) {
+		catch (RESTException ex) {
 			log.error("Registration failed ---> REST error: " + ex)
 		}
 		return false
@@ -31,11 +29,11 @@ class AgentClient {
 	
 	Boolean deregister(String id) {
 		try {
-			consul.restTemplate.put(url + "/service/deregister/$id", null)
+			consul.httpClient.put(url + "/service/deregister/$id", "");
 			consul.kv.put("/dataimport/$id", "DOWN")
 			return true
 		}
-		catch (RestClientException ex) {
+		catch (RESTException ex) {
 			log.error("Deregistration failed ---> REST error: " + ex)
 		}
 
@@ -43,11 +41,18 @@ class AgentClient {
 	}
 	
 	Map<String, AgentService> listLocalServices() {
-		ParameterizedTypeReference<Map<String,AgentService>> typeRef = new ParameterizedTypeReference<Map<String,AgentService>>() {};
-		ResponseEntity<Map<String,AgentService>> response = consul.restTemplate.exchange(url + "/services", HttpMethod.GET, null, typeRef);
-		if (response.statusCode == HttpStatus.OK) {
-			return response.body
-		}
+        TypeReference<Map<String,AgentService>> typeRef = new TypeReference<Map<String,AgentService>>() { }
+
+        try {
+            String responseBody = consul.httpClient.get(url + "/services");
+            return JsonMapHelper.fromJson(consul, responseBody, typeRef);
+        }
+        catch (RESTException e) {
+            log.error("Exception calling consul", e)
+        }
+        catch (IOException e) {
+            log.error("Exception calling consul", e)
+        }
 		return null
 	}
 }

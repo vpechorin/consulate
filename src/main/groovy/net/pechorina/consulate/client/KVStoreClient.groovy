@@ -1,12 +1,11 @@
 package net.pechorina.consulate.client
 
+import com.fasterxml.jackson.core.type.TypeReference
 import groovy.util.logging.Slf4j
 import net.pechorina.consulate.Consul
 import net.pechorina.consulate.data.KeyValue
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import net.pechorina.consulate.exceptions.RESTException
+import net.pechorina.consulate.utils.JsonMapHelper
 
 @Slf4j
 class KVStoreClient {
@@ -17,15 +16,20 @@ class KVStoreClient {
 		String uri = "$url/$key"
 		if (datacenter) uri += "?dc=$datacenter"
 		String v = null;
-		ParameterizedTypeReference<List<KeyValue>> typeRef = new ParameterizedTypeReference<List<KeyValue>>() {};
-		ResponseEntity<List<KeyValue>> resp = consul.restTemplate.exchange(uri, HttpMethod.GET, null, typeRef);
-		if (resp.statusCode == HttpStatus.OK) {
-			List<KeyValue> list = resp.body
-			
+
+		TypeReference<List<KeyValue>> typeRef = new TypeReference<List<KeyValue>>() {}
+		try {
+			String json = consul.httpClient.get(uri)
+			List<KeyValue> list = JsonMapHelper.fromJson(consul, json, typeRef)
+
 			if (list && list.size() ) {
 				v = list.get(0).getValueAsString()
 			}
 		}
+		catch (RESTException ex) {
+			log.error("List nodes by service error: ", ex)
+		}
+
 		return v
 	}
 	
@@ -40,48 +44,81 @@ class KVStoreClient {
 	
 	List<String> getValuesByPrefix(String key) {
 		List<String> lst = null;
-		ParameterizedTypeReference<List<KeyValue>> typeRef = new ParameterizedTypeReference<List<KeyValue>>() {};
-		ResponseEntity<List<KeyValue>> response = consul.restTemplate.exchange("$url/$key?recurse", HttpMethod.GET, null, typeRef);
-		if (response.statusCode == HttpStatus.OK) {
-			if (response.body && response.body.size() ) {
-				List<KeyValue> entries = response.body
-				lst = entries.collect { entry -> entry.getValueAsString() }
+
+		TypeReference<List<KeyValue>> typeRef = new TypeReference<List<KeyValue>>() {}
+		try {
+			String json = consul.httpClient.get("$url/$key?recurse")
+			List<KeyValue> list = JsonMapHelper.fromJson(consul, json, typeRef)
+
+			if (list && list.size() ) {
+				lst = list.collect { entry -> entry.getValueAsString() }
 			}
 		}
+		catch (RESTException ex) {
+			log.error("List nodes by service error: ", ex)
+		}
+
 		return lst
 	}
 	
 	Map<String,String> getEntriesAsMap(String key) {
-		ParameterizedTypeReference<List<KeyValue>> typeRef = new ParameterizedTypeReference<List<KeyValue>>() {};
-		ResponseEntity<List<KeyValue>> response = consul.restTemplate.exchange("$url/$key?recurse", HttpMethod.GET, null, typeRef);
-		if (response.statusCode == HttpStatus.OK) {
-			if (response.body && response.body.size() ) {
-				List<KeyValue> entries = response.body
-				return entries.collectEntries{ entry -> [(entry.key): entry.getValueAsString() ]}
+		TypeReference<List<KeyValue>> typeRef = new TypeReference<List<KeyValue>>() {}
+		try {
+			String json = consul.httpClient.get("$url/$key?recurse")
+			List<KeyValue> list = JsonMapHelper.fromJson(consul, json, typeRef)
+
+			if (list && list.size() ) {
+				return list.collectEntries{ entry -> [(entry.key): entry.getValueAsString() ]}
 			}
 		}
-		return null
+		catch (RESTException ex) {
+			log.error("List nodes by service error: ", ex)
+		}
+
+		return []
 	}
 	
 	List<String> listKeysByPrefix(String key) {
-		ParameterizedTypeReference<List<String>> typeRef = new ParameterizedTypeReference<List<String>>() {};
-		ResponseEntity<List<String>> response = consul.restTemplate.exchange("$url/$key", HttpMethod.GET, null, typeRef);
-		if (response.statusCode == HttpStatus.OK) {
-			return response.getBody()
+
+		TypeReference<List<String>> typeRef = new TypeReference<List<String>>() {}
+		try {
+			String json = consul.httpClient.get("$url/$key")
+			return JsonMapHelper.fromJson(consul, json, typeRef)
 		}
+		catch (RESTException ex) {
+			log.error("listKeysByPrefix error: ", ex)
+		}
+
 		return null
 	}
 	
 	void put(String key, String value) {
-		consul.restTemplate.put("$url/$key", value)
+		try {
+			consul.httpClient.put("$url/$key", value)
+		}
+		catch (RESTException ex) {
+			log.error("List nodes by service error: ", ex)
+		}
+
 	}
 	
 	void delete(String key) {
-		consul.restTemplate.delete("$url/$key")
+		try {
+			consul.httpClient.delete("$url/$key")
+		}
+		catch (RESTException ex) {
+			log.error("List nodes by service error: ", ex)
+		}
+
 	}
 	
 	void deleteRecursive(String key) {
-		consul.restTemplate.delete("$url/$key?recurse")
+		try {
+			consul.httpClient.delete("$url/$key?recurse")
+		}
+		catch (RESTException ex) {
+			log.error("List nodes by service error: ", ex)
+		}
 	}
 	
 }

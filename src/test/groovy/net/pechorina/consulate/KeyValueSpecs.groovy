@@ -1,10 +1,8 @@
 package net.pechorina.consulate
 
+import groovy.util.logging.Slf4j
 import net.pechorina.consulate.data.KeyValue
-import net.pechorina.consulate.data.catalog.CatalogService
-import spock.lang.Ignore
-import spock.lang.Specification;
-import groovy.util.logging.Slf4j;
+import spock.lang.Specification
 
 @Slf4j
 class KeyValueSpecs extends Specification {
