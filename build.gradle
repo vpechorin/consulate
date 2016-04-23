@@ -15,7 +15,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 
 group = 'net.pechorina.consulate'
-version = '0.1.8'
+version = '0.2.0'
 description = """Consul client using REST API"""
 
 sourceCompatibility = 1.8
